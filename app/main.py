@@ -1,23 +1,22 @@
 from fastapi import FastAPI
-from .routers import auth, leads, contacts, interactions, performance
-from .database import Base, engine
+from app.database import Base, engine
+from app.routers import auth, leads, contacts, interactions, call_planning, performance
 
-# Create all tables in the DB if they don't exist
+# Create DB tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="KAM Lead Management System",
-    description="A system to manage leads, contacts, interactions, and performance for Key Account Managers.",
-    version="1.0.0"
-)
+app = FastAPI(title="KAM Lead Management System")
 
-# Include Routers
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(leads.router, prefix="/leads", tags=["Leads"])
-app.include_router(contacts.router, prefix="/contacts", tags=["Contacts"])
-app.include_router(interactions.router, prefix="/interactions", tags=["Interactions"])
-app.include_router(performance.router, prefix="/performance", tags=["Performance"])
 
-@app.get("/", tags=["Root"])
-def read_root():
-    return {"message": "Welcome to KAM Lead Management System!"}
+@app.get("/")
+def hello():
+    return {"message": "Welcome"}
+
+
+# Register routers
+app.include_router(auth.router)
+app.include_router(leads.router)
+app.include_router(contacts.router)
+app.include_router(interactions.router)
+app.include_router(call_planning.router)
+app.include_router(performance.router)

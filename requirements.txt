@@ -273,3 +273,4 @@ wrapt==1.17.0
 wsproto==1.2.0
 yarl==1.8.2
 zipp==3.21.0
+python-jose==3.3.0

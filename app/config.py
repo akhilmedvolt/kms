@@ -1,12 +1,10 @@
 import os
-from pydantic import BaseSettings
+from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    SECRET_KEY: str = "SUPER_SECRET_KEY"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+load_dotenv()
 
-    class Config:
-        env_file = ".env"
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "verysecretkey")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-settings = Settings()
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./kam_db.sqlite3")
