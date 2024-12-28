@@ -22,7 +22,7 @@ env = Environment(
 )
 
 async def send_verification_email(email: EmailStr, username: str, token: str):
-    verification_link = f"http://localhost:8000/auth/verify-email?token={token}"
+    verification_link = f"http://164.52.205.45:12000/auth/verify-email?token={token}"
     subject = "Verify Your Email"
 
     # Render HTML Template (Optional)
