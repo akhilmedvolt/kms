@@ -41,29 +41,33 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          set -e  # Exit on any error
+          
           # Log in to Docker Hub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
           # Pull the latest Gen AI image
           docker pull logiclens2024/udaan-backend-test:latest
           
-          # Kill any process or container using port 12000
-          echo "Checking for processes on port 12000..."
-          PID=$(sudo lsof -t -i:12000)
+          # Check and free port 12000
+          echo "Checking for processes or containers on port 12000..."
+          PID=$(sudo lsof -t -i:12000) || true
           if [ -n "$PID" ]; then
-            echo "Found process on port 12000. Killing it..."
+            echo "Killing process $PID on port 12000..."
             sudo kill -9 $PID || true
           fi
-          
-          # Stop and remove any container using port 12000
-          PORT_CONTAINER_ID=$(docker ps -q --filter "publish=12000")
+
+          PORT_CONTAINER_ID=$(docker ps -q --filter "publish=12000") || true
           if [ -n "$PORT_CONTAINER_ID" ]; then
-            echo "Found container using port 12000. Stopping and removing it..."
+            echo "Stopping and removing container $PORT_CONTAINER_ID on port 12000..."
             docker stop $PORT_CONTAINER_ID || true
             docker rm $PORT_CONTAINER_ID || true
           fi
   
           # Run the Gen AI container
+          echo "Starting new container..."
           docker run -d \
+            --name udaan-backend \
             -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
             -e EMAIL_VERIFICATION_SECRET_KEY=${{ secrets.EMAIL_VERIFICATION_SECRET_KEY }} \
             -e ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }} \
