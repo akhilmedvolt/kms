@@ -46,7 +46,7 @@ jobs:
           # Log in to Docker Hub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           
-          # Pull the latest Gen AI image
+          # Pull the latest image
           docker pull logiclens2024/udaan-backend-test:latest
           
           # Check and free port 12000
@@ -65,8 +65,7 @@ jobs:
           fi
   
           # Run the Gen AI container
-          echo "Starting new container..."
-          docker run -d \
+          docker run \
             --name udaan-backend \
             -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
             -e EMAIL_VERIFICATION_SECRET_KEY=${{ secrets.EMAIL_VERIFICATION_SECRET_KEY }} \
@@ -81,4 +80,4 @@ jobs:
             -e MAIL_SSL=${{ secrets.MAIL_SSL }} \
             -e MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }} \
             -p 12000:12000 \
-            logiclens2024/udaan-backend-test:latest
+            -d logiclens2024/udaan-backend-test:latest
