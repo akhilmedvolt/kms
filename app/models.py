@@ -11,6 +11,10 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)  # New field for email verification
+
+    # Relationships
+    leads = relationship("Lead", back_populates="owner", cascade="all, delete-orphan")
 
 
 class Lead(Base):
@@ -18,12 +22,13 @@ class Lead(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     restaurant_name = Column(String, nullable=False)
-    status = Column(
-        String, default="NEW"
-    )  # Possible values: NEW, IN_PROGRESS, WON, LOST
-    call_frequency_days = Column(Integer, default=7)  # how often KAM calls
+    status = Column(String, default="NEW")
+    call_frequency_days = Column(Integer, default=7)
     last_call_date = Column(DateTime)
-    # Relationship
+    owner_id = Column(Integer, ForeignKey("users.id"))  # New field to link to User
+
+    # Relationships
+    owner = relationship("User", back_populates="leads")
     contacts = relationship(
         "Contact", back_populates="lead", cascade="all, delete-orphan"
     )

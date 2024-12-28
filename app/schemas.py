@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 
+
 # User Schemas
 class UserBase(BaseModel):
     username: str
@@ -14,6 +15,7 @@ class UserCreate(UserBase):
 class UserResponse(UserBase):
     id: int
     is_active: bool
+    is_verified: bool  # New field
 
     class Config:
         orm_mode = True
