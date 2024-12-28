@@ -4,21 +4,9 @@ from datetime import datetime
 from app import models, schemas
 from app.database import get_db
 from app.dependencies import get_current_active_user
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(prefix="/interactions", tags=["Interactions"])
-
-# routers/interactions.py
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import List
-from app import models, schemas
-from app.database import get_db
-from app.dependencies import get_current_active_user
-from datetime import datetime
-
-router = APIRouter(prefix="/interactions", tags=["Interactions"])
-
 
 @router.post("/{lead_id}", response_model=schemas.InteractionResponse)
 def add_interaction(
@@ -27,34 +15,58 @@ def add_interaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
+    # Check if the lead exists
     lead = db.query(models.Lead).filter(models.Lead.id == lead_id).first()
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
     # Create the interaction
-    interaction = models.Interaction(**interaction_in.dict(), lead_id=lead.id)
+    interaction_date = datetime.utcnow()  # Explicitly set interaction date
+    interaction = models.Interaction(
+        **interaction_in.dict(), lead_id=lead.id, interaction_date=interaction_date
+    )
     db.add(interaction)
 
-    # If it's a CALL, update the lead's last_call_date
+    # Update lead's last_call_date for "CALL" interactions
     if interaction.type == "CALL":
-        # Option A: set last_call_date to the interaction_date
-        lead.last_call_date = interaction.interaction_date
-        # Option B: always use datetime.utcnow(), if you prefer
-        # lead.last_call_date = datetime.utcnow()
+        lead.last_call_date = interaction_date
 
+    # Commit changes to the database
     db.commit()
     db.refresh(interaction)
     return interaction
 
-
 @router.get("/{lead_id}", response_model=List[schemas.InteractionResponse])
 def list_interactions_for_lead(
     lead_id: int,
+    interaction_type: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
     lead = db.query(models.Lead).filter(models.Lead.id == lead_id).first()
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
-    interactions = db.query(models.Interaction).filter_by(lead_id=lead.id).all()
-    return interactions
+
+    query = db.query(models.Interaction).filter_by(lead_id=lead.id)
+    if interaction_type:
+        query = query.filter(models.Interaction.type == interaction_type)
+
+    return query.all()
+
+@router.put("/{interaction_id}", response_model=schemas.InteractionResponse)
+def update_interaction(
+    interaction_id: int,
+    interaction_in: schemas.InteractionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user),
+):
+    interaction = db.query(models.Interaction).filter(models.Interaction.id == interaction_id).first()
+    if not interaction:
+        raise HTTPException(status_code=404, detail="Interaction not found")
+
+    for attr, value in interaction_in.dict(exclude_unset=True).items():
+        setattr(interaction, attr, value)
+
+    db.commit()
+    db.refresh(interaction)
+    return interaction
