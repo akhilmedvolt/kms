@@ -65,8 +65,7 @@ jobs:
           fi
   
           # Run the Gen AI container
-          docker run \
-            --name udaan-backend \
+          docker run -d \
             -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
             -e EMAIL_VERIFICATION_SECRET_KEY=${{ secrets.EMAIL_VERIFICATION_SECRET_KEY }} \
             -e ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }} \
@@ -80,4 +79,4 @@ jobs:
             -e MAIL_SSL=${{ secrets.MAIL_SSL }} \
             -e MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }} \
             -p 12000:12000 \
-            -d logiclens2024/udaan-backend-test:latest
+            logiclens2024/udaan-backend-test:latest
