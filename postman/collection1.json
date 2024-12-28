@@ -1,0 +1,424 @@
+{
+    "info": {
+        "_postman_id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab",
+        "name": "KAM Lead Management System",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Comprehensive Postman Collection for Testing the KAM Lead Management System with Authentication and Email Verification."
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser@example.com\",\n    \"password\": \"TestPassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": ["{{base_url}}"],
+                            "path": ["auth", "register"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify Email",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/verify-email?token={{verification_token}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["auth", "verify-email"],
+                            "query": [
+                                {
+                                    "key": "token",
+                                    "value": "{{verification_token}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"token\", jsonData.access_token);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser@example.com\",\n    \"password\": \"TestPassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["auth", "login"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Current User",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": ["{{base_url}}"],
+                            "path": ["auth", "me"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Leads",
+            "item": [
+                {
+                    "name": "Create Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurant_name\": \"Test Restaurant\",\n    \"status\": \"NEW\",\n    \"call_frequency_days\": 7\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/leads/",
+                            "host": ["{{base_url}}"],
+                            "path": ["leads", ""]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Leads",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/leads/",
+                            "host": ["{{base_url}}"],
+                            "path": ["leads", ""]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Lead by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/leads/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["leads", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Lead",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurant_name\": \"Updated Restaurant\",\n    \"status\": \"IN_PROGRESS\",\n    \"call_frequency_days\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/leads/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["leads", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Lead",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/leads/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["leads", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Contacts",
+            "item": [
+                {
+                    "name": "Add Contact to Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"role\": \"Manager\",\n    \"contact_info\": \"john.doe@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/contacts/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["contacts", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Contacts for Lead",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contacts/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["contacts", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Interactions",
+            "item": [
+                {
+                    "name": "Add Interaction to Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"details\": \"Called the owner to discuss next order\",\n    \"type\": \"CALL\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/interactions/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["interactions", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Interactions for Lead",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/interactions/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["interactions", "{{lead_id}}"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Call Planning",
+            "item": [
+                {
+                    "name": "Leads to Call Today",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/call-planning/today",
+                            "host": ["{{base_url}}"],
+                            "path": ["call-planning", "today"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Performance",
+            "item": [
+                {
+                    "name": "Well-Performing Leads",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/performance/well-performing",
+                            "host": ["{{base_url}}"],
+                            "path": ["performance", "well-performing"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Under-Performing Leads",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/performance/under-performing",
+                            "host": ["{{base_url}}"],
+                            "path": ["performance", "under-performing"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "lead_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "verification_token",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
