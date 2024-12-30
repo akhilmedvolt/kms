@@ -46,12 +46,6 @@ The **Key Account Manager (KAM) API** is a system to manage leads, contacts, int
      ```python
      DATABASE_URL = "postgresql://<username>:<password>@localhost:5432/kam_db"
      ```
-
-5. Run database migrations:
-   ```bash
-   alembic upgrade head
-   ```
-
 ---
 
 ## Running Instructions
@@ -70,70 +64,11 @@ The application will be available at `http://127.0.0.1:8000`.
 
 ---
 
-## Test Execution Guide
-
-### Running Tests
-To execute all tests, run:
-```bash
-pytest tests/
-```
-
-### Example Output
-- **Passed Tests**:
-  ```
-  ============================= test session starts =============================
-  collected 10 items
-
-  tests/test_api.py ..........
-
-  ========================== 10 passed in 1.23s ==========================
-  ```
-- **Failed Tests**:
-  Debug output will indicate the failing test case.
-
----
-
 ## API Documentation
 
 ### Authentication
-- **Register**: `POST /auth/register`
-  ```json
-  {
-    "username": "example@example.com",
-    "password": "password123"
-  }
-  ```
-
-- **Login**: `POST /auth/login`
-  ```json
-  {
-    "username": "example@example.com",
-    "password": "password123"
-  }
-  ```
-
-### KAM Management
-- **Create KAM**: `POST /kams`
-  ```json
-  {
-    "name": "Manager Name",
-    "email": "manager@example.com"
-  }
-  ```
-
-- **Get All KAMs**: `GET /kams`
-
-### Leads Management
-- **Create Lead**: `POST /leads`
-  ```json
-  {
-    "restaurant_name": "Test Restaurant",
-    "call_frequency_days": 7
-  }
-  ```
-
-- **Get All Leads**: `GET /leads`
-
+- Access:  http://127.0.0.1:8000/docs
+- Redoc: http://127.0.0.1:8000/redoc
 ---
 
 ## Sample Usage Examples
@@ -163,5 +98,3 @@ pytest tests/
    ```
 
 ---
-
-For additional details or assistance, refer to the documentation or contact the development team.
