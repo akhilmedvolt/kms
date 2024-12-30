@@ -70,13 +70,16 @@ class InteractionResponse(InteractionBase):
 # Lead Schemas
 from app.core.constants import VALID_LEAD_STATUSES
 
+
 class LeadBase(BaseModel):
     restaurant_name: str
     status: Optional[str] = "NEW"
     call_frequency_days: int = 7
 
+
 class LeadCreate(LeadBase):
     pass
+
 
 class LeadResponse(LeadBase):
     id: int
@@ -85,20 +88,25 @@ class LeadResponse(LeadBase):
     class Config:
         orm_mode = True
 
+
 class LeadUpdate(BaseModel):
     restaurant_name: Optional[str] = None
     status: Optional[str] = None
     call_frequency_days: Optional[int] = None
     last_call_date: Optional[datetime] = None
 
+
 from pydantic import BaseModel
+
 
 class KAMBase(BaseModel):
     name: str
     email: str
 
+
 class KAMCreate(KAMBase):
     pass
+
 
 class KAMResponse(KAMBase):
     id: int

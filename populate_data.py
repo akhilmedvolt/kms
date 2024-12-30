@@ -8,16 +8,22 @@ HEADERS = {"Content-Type": "application/json"}
 # User credentials
 user_credentials = {
     "username": "akhilsankerreekithak@gmail.com",
-    "password": "PasswordTestKAMLeads2024"
+    "password": "PasswordTestKAMLeads2024",
 }
+
 
 # Helper Functions
 def random_date(start, end):
     """Generate a random datetime between `start` and `end`."""
-    return start + timedelta(seconds=random.randint(0, int((end - start).total_seconds())))
+    return start + timedelta(
+        seconds=random.randint(0, int((end - start).total_seconds()))
+    )
+
 
 def login_user():
-    response = requests.post(f"{BASE_URL}/auth/login", json=user_credentials, headers=HEADERS)
+    response = requests.post(
+        f"{BASE_URL}/auth/login", json=user_credentials, headers=HEADERS
+    )
     if response.status_code != 200:
         print(f"Login Failed: {response.json()}")
         return None
@@ -25,6 +31,7 @@ def login_user():
     HEADERS["Authorization"] = f"Bearer {token}"
     print("Login successful!")
     return token
+
 
 def create_kam(name, email):
     kam_data = {"name": name, "email": email}
@@ -34,11 +41,12 @@ def create_kam(name, email):
     print(f"KAM creation failed: {response.json()}")
     return None
 
+
 def create_lead(restaurant_name, call_frequency_days, status="NEW"):
     lead_data = {
         "restaurant_name": restaurant_name,
         "call_frequency_days": call_frequency_days,
-        "status": status
+        "status": status,
     }
     response = requests.post(f"{BASE_URL}/leads/", json=lead_data, headers=HEADERS)
     if response.status_code == 201:
@@ -46,22 +54,31 @@ def create_lead(restaurant_name, call_frequency_days, status="NEW"):
     print(f"Lead creation failed: {response.json()}")
     return None
 
+
 def add_contact(lead_id, name, role, contact_info):
     contact_data = {"name": name, "role": role, "contact_info": contact_info}
-    response = requests.post(f"{BASE_URL}/contacts/{lead_id}/", json=contact_data, headers=HEADERS)
+    response = requests.post(
+        f"{BASE_URL}/contacts/{lead_id}/", json=contact_data, headers=HEADERS
+    )
     if response.status_code != 201:
         print(f"Contact creation failed for lead {lead_id}: {response.json()}")
+
 
 def add_interaction(lead_id, details, interaction_type="CALL", outcome="PENDING"):
     interaction_data = {
         "details": details,
         "type": interaction_type,
         "outcome": outcome,
-        "interaction_date": random_date(datetime.now() - timedelta(days=30), datetime.now()).isoformat()
+        "interaction_date": random_date(
+            datetime.now() - timedelta(days=30), datetime.now()
+        ).isoformat(),
     }
-    response = requests.post(f"{BASE_URL}/interactions/{lead_id}/", json=interaction_data, headers=HEADERS)
+    response = requests.post(
+        f"{BASE_URL}/interactions/{lead_id}/", json=interaction_data, headers=HEADERS
+    )
     if response.status_code != 201:
         print(f"Interaction creation failed for lead {lead_id}: {response.json()}")
+
 
 # Bulk Data Population
 def populate_data():
@@ -90,7 +107,7 @@ def populate_data():
                 lead_id,
                 name=f"Contact {j + 1} for {lead_name}",
                 role=random.choice(["Manager", "Chef", "Owner"]),
-                contact_info=f"{lead_name.lower().replace(' ', '_')}_{j + 1}@example.com"
+                contact_info=f"{lead_name.lower().replace(' ', '_')}_{j + 1}@example.com",
             )
 
         # Add 5 interactions per lead
@@ -99,10 +116,11 @@ def populate_data():
                 lead_id,
                 details=f"Interaction {k + 1} for {lead_name}",
                 interaction_type=random.choice(["CALL", "MEETING", "EMAIL"]),
-                outcome=random.choice(["SUCCESSFUL", "PENDING", "FAILED"])
+                outcome=random.choice(["SUCCESSFUL", "PENDING", "FAILED"]),
             )
 
     print("Bulk data population complete!")
+
 
 # Run the script
 populate_data()

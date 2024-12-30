@@ -11,15 +11,15 @@ from app.config import (
     MAIL_TLS,
     MAIL_SSL,
     MAIL_FROM_NAME,
-    EMAIL_TEMPLATES_DIR
+    EMAIL_TEMPLATES_DIR,
 )
 from pathlib import Path
 
-# Initialize Jinja2 Environment (Optional: Only if using HTML templates)
 env = Environment(
     loader=FileSystemLoader(searchpath=EMAIL_TEMPLATES_DIR),
-    autoescape=select_autoescape(['html', 'xml'])
+    autoescape=select_autoescape(["html", "xml"]),
 )
+
 
 async def send_verification_email(email: EmailStr, username: str, token: str):
     verification_link = f"http://164.52.205.45:12000/auth/verify-email?token={token}"
@@ -29,7 +29,6 @@ async def send_verification_email(email: EmailStr, username: str, token: str):
     # template = env.get_template('verification.html')
     # html_content = template.render(username=username, verification_link=verification_link)
 
-    # Plain Text Email
     body = f"""Hi {username},
 
 Please verify your email by clicking on the following link:
@@ -44,7 +43,6 @@ If you did not sign up for this account, please ignore this email.
     message["To"] = email
     message["Subject"] = subject
     message.set_content(body)
-    # If using HTML templates, uncomment the following line:
     # message.add_alternative(html_content, subtype='html')
 
     try:
@@ -54,7 +52,7 @@ If you did not sign up for this account, please ignore this email.
             port=MAIL_PORT,
             username=MAIL_USERNAME,
             password=MAIL_PASSWORD,
-            start_tls=MAIL_TLS
+            start_tls=MAIL_TLS,
         )
         print(f"Verification email sent to {email}")
     except aiosmtplib.SMTPException as e:

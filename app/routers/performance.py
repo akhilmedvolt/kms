@@ -8,15 +8,12 @@ from app.dependencies import get_current_active_user
 
 router = APIRouter(prefix="/performance", tags=["Performance"])
 
+
 @router.get("/well-performing", response_model=List[schemas.LeadResponse])
 def well_performing_leads(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    """
-    Refined logic: well-performing leads have more than 5 interactions
-    or orders in the last 30 days.
-    """
     cutoff_date = datetime.utcnow() - timedelta(days=30)
     leads = db.query(models.Lead).filter(models.Lead.owner_id == current_user.id).all()
     good_leads = []
@@ -28,15 +25,12 @@ def well_performing_leads(
             good_leads.append(lead)
     return good_leads
 
+
 @router.get("/under-performing", response_model=List[schemas.LeadResponse])
 def under_performing_leads(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    """
-    Refined logic: under-performing leads have fewer than 3 interactions
-    or orders in the last 30 days.
-    """
     cutoff_date = datetime.utcnow() - timedelta(days=30)
     leads = db.query(models.Lead).filter(models.Lead.owner_id == current_user.id).all()
     bad_leads = []
@@ -48,19 +42,20 @@ def under_performing_leads(
             bad_leads.append(lead)
     return bad_leads
 
+
 @router.get("/visualizations/interaction-trends", response_model=Dict[str, int])
 def interaction_trends(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    """
-    Returns interaction trends over the last 30 days.
-    """
     cutoff_date = datetime.utcnow() - timedelta(days=30)
     interactions = (
         db.query(models.Interaction)
         .join(models.Lead)
-        .filter(models.Lead.owner_id == current_user.id, models.Interaction.interaction_date >= cutoff_date)
+        .filter(
+            models.Lead.owner_id == current_user.id,
+            models.Interaction.interaction_date >= cutoff_date,
+        )
         .all()
     )
 
@@ -73,19 +68,20 @@ def interaction_trends(
 
     return trend_data
 
+
 @router.get("/visualizations/order-patterns", response_model=Dict[str, int])
 def order_patterns(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    """
-    Returns order patterns based on interaction types.
-    """
     cutoff_date = datetime.utcnow() - timedelta(days=30)
     interactions = (
         db.query(models.Interaction)
         .join(models.Lead)
-        .filter(models.Lead.owner_id == current_user.id, models.Interaction.interaction_date >= cutoff_date)
+        .filter(
+            models.Lead.owner_id == current_user.id,
+            models.Interaction.interaction_date >= cutoff_date,
+        )
         .all()
     )
 

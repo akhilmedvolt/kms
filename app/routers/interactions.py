@@ -8,6 +8,7 @@ from typing import List, Optional
 
 router = APIRouter(prefix="/interactions", tags=["Interactions"])
 
+
 @router.post("/{lead_id}", response_model=schemas.InteractionResponse)
 def add_interaction(
     lead_id: int,
@@ -15,26 +16,24 @@ def add_interaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    # Check if the lead exists
+
     lead = db.query(models.Lead).filter(models.Lead.id == lead_id).first()
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
-    # Create the interaction
-    interaction_date = datetime.utcnow()  # Explicitly set interaction date
+    interaction_date = datetime.utcnow()
     interaction = models.Interaction(
         **interaction_in.dict(), lead_id=lead.id, interaction_date=interaction_date
     )
     db.add(interaction)
 
-    # Update lead's last_call_date for "CALL" interactions
     if interaction.type == "CALL":
         lead.last_call_date = interaction_date
 
-    # Commit changes to the database
     db.commit()
     db.refresh(interaction)
     return interaction
+
 
 @router.get("/{lead_id}", response_model=List[schemas.InteractionResponse])
 def list_interactions_for_lead(
@@ -53,6 +52,7 @@ def list_interactions_for_lead(
 
     return query.all()
 
+
 @router.put("/{interaction_id}", response_model=schemas.InteractionResponse)
 def update_interaction(
     interaction_id: int,
@@ -60,7 +60,11 @@ def update_interaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    interaction = db.query(models.Interaction).filter(models.Interaction.id == interaction_id).first()
+    interaction = (
+        db.query(models.Interaction)
+        .filter(models.Interaction.id == interaction_id)
+        .first()
+    )
     if not interaction:
         raise HTTPException(status_code=404, detail="Interaction not found")
 

@@ -24,5 +24,5 @@ MAIL_TLS = os.getenv("MAIL_TLS", "true").lower() in ["true", "1", "yes"]
 MAIL_SSL = os.getenv("MAIL_SSL", "false").lower() in ["true", "1", "yes"]
 MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME", "KAM Lead Management System")
 
-# Email Templates Directory
+# Email Templates
 EMAIL_TEMPLATES_DIR = Path(os.getenv("EMAIL_TEMPLATES_DIR", "templates/email"))

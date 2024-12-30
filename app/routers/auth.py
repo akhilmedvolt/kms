@@ -3,8 +3,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from datetime import timedelta
-from app.utils import get_password_hash, verify_password, create_access_token, create_email_verification_token, \
-    verify_email_verification_token
+from app.utils import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    create_email_verification_token,
+    verify_email_verification_token,
+)
 from app.dependencies import get_current_active_user
 from app.database import get_db
 from app import models, schemas
@@ -16,7 +21,11 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", response_model=schemas.UserResponse)
 async def register(user_create: schemas.UserCreate, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == user_create.username).first()
+    user = (
+        db.query(models.User)
+        .filter(models.User.username == user_create.username)
+        .first()
+    )
     if user:
         raise HTTPException(status_code=400, detail="Username already registered")
     hashed_pw = get_password_hash(user_create.password)
@@ -25,18 +34,22 @@ async def register(user_create: schemas.UserCreate, db: Session = Depends(get_db
     db.commit()
     db.refresh(new_user)
 
-    # Generate email verification token
     token = create_email_verification_token(data={"sub": new_user.username})
 
-    # Send verification email
-    await send_verification_email(email=new_user.username, username=new_user.username, token=token)
+    await send_verification_email(
+        email=new_user.username, username=new_user.username, token=token
+    )
 
     return new_user
 
 
 @router.post("/login", response_model=schemas.Token)
 def login(user_create: schemas.UserCreate, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == user_create.username).first()
+    user = (
+        db.query(models.User)
+        .filter(models.User.username == user_create.username)
+        .first()
+    )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     if not verify_password(user_create.password, user.hashed_password):
@@ -62,7 +75,11 @@ def verify_email(token: str = Query(...), db: Session = Depends(get_db)):
     if not token_data or not token_data.username:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
 
-    user = db.query(models.User).filter(models.User.username == token_data.username).first()
+    user = (
+        db.query(models.User)
+        .filter(models.User.username == token_data.username)
+        .first()
+    )
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
     if user.is_verified:

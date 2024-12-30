@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime
 
+
 class KAM(Base):
     __tablename__ = "kams"
 
@@ -13,14 +14,16 @@ class KAM(Base):
 
     leads = relationship("Lead", back_populates="kam")
 
+
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)  # Ensure this field exists
+    username = Column(String, unique=True, index=True)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    is_verified = Column(Boolean, default=False)  # Optional, for email verification
+    is_verified = Column(Boolean, default=False)
+
 
 class Lead(Base):
     __tablename__ = "leads"
@@ -31,15 +34,16 @@ class Lead(Base):
     status = Column(String, default="NEW")
     call_frequency_days = Column(Integer, default=7)
     last_call_date = Column(DateTime, nullable=True)
-    kam_id = Column(Integer, ForeignKey("kams.id"))  # Ensure this exists
+    kam_id = Column(Integer, ForeignKey("kams.id"))
 
     owner = relationship("User")
     kam = relationship("KAM", back_populates="leads")
-    contacts = relationship("Contact", back_populates="lead", cascade="all, delete-orphan")
-    interactions = relationship("Interaction", back_populates="lead", cascade="all, delete-orphan")
-
-
-
+    contacts = relationship(
+        "Contact", back_populates="lead", cascade="all, delete-orphan"
+    )
+    interactions = relationship(
+        "Interaction", back_populates="lead", cascade="all, delete-orphan"
+    )
 
 
 class Contact(Base):
@@ -49,8 +53,9 @@ class Contact(Base):
     name = Column(String, nullable=False)
     role = Column(String, nullable=False)
     contact_info = Column(String, nullable=False)
-    lead_id = Column(Integer, ForeignKey("leads.id"))  # Add this line
-    lead = relationship("Lead", back_populates="contacts")  # Add this line
+    lead_id = Column(Integer, ForeignKey("leads.id"))
+    lead = relationship("Lead", back_populates="contacts")
+
 
 class Interaction(Base):
     __tablename__ = "interactions"
@@ -59,7 +64,7 @@ class Interaction(Base):
     interaction_date = Column(DateTime, default=datetime.utcnow)
     details = Column(String, nullable=False)
     type = Column(String, default="CALL")
-    outcome = Column(String, nullable=True)  # Optional Outcome Field
-    lead_id = Column(Integer, ForeignKey("leads.id"))  # Add this line
+    outcome = Column(String, nullable=True)
+    lead_id = Column(Integer, ForeignKey("leads.id"))
 
-    lead = relationship("Lead", back_populates="interactions")  # Add this line
+    lead = relationship("Lead", back_populates="interactions")
