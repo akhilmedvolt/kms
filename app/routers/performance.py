@@ -14,14 +14,10 @@ def well_performing_leads(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    cutoff_date = datetime.utcnow() - timedelta(days=30)
     leads = db.query(models.Lead).filter(models.Lead.owner_id == current_user.id).all()
     good_leads = []
     for lead in leads:
-        interactions_count = sum(
-            1 for i in lead.interactions if i.interaction_date >= cutoff_date
-        )
-        if interactions_count > 5:
+        if any(interaction.type == "CALL" for interaction in lead.interactions):
             good_leads.append(lead)
     return good_leads
 
